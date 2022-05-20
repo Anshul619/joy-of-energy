@@ -55,6 +55,7 @@ public class SeedingApplicationDataConfiguration {
         return smartMeterToPricePlanAccounts;
     }
 
+    // ObjectMapper provides functionality for reading and writing JSON, either to and from basic POJOs (Plain Old Java Objects), or to and from a general-purpose JSON Tree Model (JsonNode), as well as related functionality for performing conversions
     @Bean
     @Primary
     public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {

@@ -17,6 +17,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 @RestController
 @RequestMapping("/price-plans")
 public class PricePlanComparatorController {
@@ -26,6 +30,8 @@ public class PricePlanComparatorController {
     private final PricePlanService pricePlanService;
     private final AccountService accountService;
 
+    Logger logger = LoggerFactory.getLogger(PricePlanComparatorController.class.getName());
+
     public PricePlanComparatorController(PricePlanService pricePlanService, AccountService accountService) {
         this.pricePlanService = pricePlanService;
         this.accountService = accountService;
@@ -33,6 +39,9 @@ public class PricePlanComparatorController {
 
     @GetMapping("/compare-all/{smartMeterId}")
     public ResponseEntity<Map<String, Object>> calculatedCostForEachPricePlan(@PathVariable String smartMeterId) {
+
+        logger.info("calculatedCostForEachPricePlan");
+
         String pricePlanId = accountService.getPricePlanIdForSmartMeterId(smartMeterId);
         Optional<Map<String, BigDecimal>> consumptionsForPricePlans =
                 pricePlanService.getConsumptionCostOfElectricityReadingsForEachPricePlan(smartMeterId);
@@ -53,6 +62,9 @@ public class PricePlanComparatorController {
     @GetMapping("/recommend/{smartMeterId}")
     public ResponseEntity<List<Map.Entry<String, BigDecimal>>> recommendCheapestPricePlans(@PathVariable String smartMeterId,
                                                                                            @RequestParam(value = "limit", required = false) Integer limit) {
+
+        logger.info("recommendCheapestPricePlans");
+
         Optional<Map<String, BigDecimal>> consumptionsForPricePlans =
                 pricePlanService.getConsumptionCostOfElectricityReadingsForEachPricePlan(smartMeterId);
 

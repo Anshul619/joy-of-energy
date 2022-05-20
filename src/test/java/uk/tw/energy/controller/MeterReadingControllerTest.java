@@ -22,7 +22,7 @@ public class MeterReadingControllerTest {
     private MeterReadingService meterReadingService;
 
     @BeforeEach
-    public void setUp() {
+    public void setUpInitiate() {
         this.meterReadingService = new MeterReadingService(new HashMap<>());
         this.meterReadingController = new MeterReadingController(meterReadingService);
     }

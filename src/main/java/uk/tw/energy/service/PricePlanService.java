@@ -19,9 +19,12 @@ public class PricePlanService {
     private final List<PricePlan> pricePlans;
     private final MeterReadingService meterReadingService;
 
-    public PricePlanService(List<PricePlan> pricePlans, MeterReadingService meterReadingService) {
+    private final AccountService accountService;
+
+    public PricePlanService(List<PricePlan> pricePlans, MeterReadingService meterReadingService, AccountService accountService) {
         this.pricePlans = pricePlans;
         this.meterReadingService = meterReadingService;
+        this.accountService = accountService;
     }
 
     public Optional<Map<String, BigDecimal>> getConsumptionCostOfElectricityReadingsForEachPricePlan(String smartMeterId) {
@@ -35,6 +38,30 @@ public class PricePlanService {
                 Collectors.toMap(PricePlan::getPlanName, t -> calculateCost(electricityReadings.get(), t))));
     }
 
+    public BigDecimal getLastWeekConsumptionCostOfElectricityReadingsForEachPricePlan(String smartMeterId) {
+        Optional<List<ElectricityReading>> lastWeekElectricityReadings = meterReadingService.getLastWeekReadings(smartMeterId);
+
+        // When there are no readings
+        if (!lastWeekElectricityReadings.isPresent()) {
+            return BigDecimal.ZERO;
+        }
+
+        String planName = this.accountService.getPricePlanIdForSmartMeterId(smartMeterId);
+
+        for (PricePlan pricePlanIterator: pricePlans) {
+
+            if (pricePlanIterator.getPlanName() == planName) {
+
+                return calculateCost(lastWeekElectricityReadings.get(), pricePlanIterator);
+
+            }
+
+        }
+
+        // When smart meter doesn't have any plans
+        return BigDecimal.valueOf(-1);
+    }
+
     private BigDecimal calculateCost(List<ElectricityReading> electricityReadings, PricePlan pricePlan) {
         BigDecimal average = calculateAverageReading(electricityReadings);
         BigDecimal timeElapsed = calculateTimeElapsed(electricityReadings);
@@ -42,6 +69,7 @@ public class PricePlanService {
         BigDecimal averagedCost = average.divide(timeElapsed, RoundingMode.HALF_UP);
         return averagedCost.multiply(pricePlan.getUnitRate());
     }
+
 
     private BigDecimal calculateAverageReading(List<ElectricityReading> electricityReadings) {
         BigDecimal summedReadings = electricityReadings.stream()

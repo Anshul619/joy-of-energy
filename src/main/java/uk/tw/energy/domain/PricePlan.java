@@ -7,6 +7,9 @@ import java.util.List;
 
 public class PricePlan {
 
+    /**
+     * Every plan would contain rate per kWh, plan name, peakTimeMultipliers etc.
+     */
     private final String energySupplier;
     private final String planName;
     private final BigDecimal unitRate; // unit price per kWh
@@ -32,11 +35,23 @@ public class PricePlan {
     }
 
     public BigDecimal getPrice(LocalDateTime dateTime) {
-        return peakTimeMultipliers.stream()
+
+        // More readable code
+        for (PeakTimeMultiplier currentMultiplier: peakTimeMultipliers) {
+
+            if (currentMultiplier.dayOfWeek.equals(dateTime.getDayOfWeek())) {
+                return unitRate.multiply(currentMultiplier.multiplier);
+            }
+        }
+
+        return unitRate;
+
+
+        /*return peakTimeMultipliers.stream()
                 .filter(multiplier -> multiplier.dayOfWeek.equals(dateTime.getDayOfWeek()))
                 .findFirst()
                 .map(multiplier -> unitRate.multiply(multiplier.multiplier))
-                .orElse(unitRate);
+                .orElse(unitRate);*/
     }
 
 
@@ -45,6 +60,7 @@ public class PricePlan {
         DayOfWeek dayOfWeek;
         BigDecimal multiplier;
 
+        // Multiplier and day of the week
         public PeakTimeMultiplier(DayOfWeek dayOfWeek, BigDecimal multiplier) {
             this.dayOfWeek = dayOfWeek;
             this.multiplier = multiplier;

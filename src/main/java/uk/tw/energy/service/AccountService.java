@@ -4,9 +4,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
+// To store which meter belongs to which plan?
+
 @Service
 public class AccountService {
 
+    // This is set as configuration in smartMeterToPricePlanAccounts
     private final Map<String, String> smartMeterToPricePlanAccounts;
 
     public AccountService(Map<String, String> smartMeterToPricePlanAccounts) {
