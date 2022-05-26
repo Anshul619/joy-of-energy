@@ -335,3 +335,12 @@ Example output
 To-Do
 - Error Handling
 
+# Code Improvements
+- APIs/Service - Instead of NULL, it should return empty object. Then it would be helpful for developers to integrate and improve code reusability
+- Error Handling can be improved
+    - Instead of INTERNAL_SERVER_ERROR, we should throw proper error.
+- We should have custom Response entity with standard message, status, content. And it should be used throughout the APIs response.
+- isMeterReadingsValid should be part of service, instead of controller.
+- Service can be auto wired in the Controller
+- Code Readability - Instead of stream, filter etc. we can simply write code in for loops
+- EndpointTest - Reusable functions can be in another service - getStringHttpEntity, populateMeterReadingsForMeter
